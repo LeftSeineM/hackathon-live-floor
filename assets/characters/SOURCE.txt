@@ -1,0 +1,5 @@
+Source: https://github.com/pixel-agents-hq/pixel-agents
+Commit: d1e007a9fdf3003c252d2973abe1999ae59aec33
+Paths: webview-ui/public/assets/characters/char_0.png through char_5.png
+Pixel Agents: MIT, copyright 2026 Pablo De Lucca.
+Original character art based on MetroCity by JIK-A-4: https://jik-a-4.itch.io/metrocity-free-topdown-character-pack

@@ -1,0 +1,5 @@
+private-backups/
+qa/
+test-results*.png
+node_modules/
+*.log
