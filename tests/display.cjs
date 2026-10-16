@@ -12,7 +12,6 @@ const { pathToFileURL } = require('node:url');
     await page.goto(process.env.DEMO_URL || pathToFileURL(path.resolve(__dirname, '../index.html')).href);
     await page.waitForFunction(() => EEDemo.snapshot().ready);
     await page.clock.pauseAt(new Date('2026-10-18T12:59:59+08:00'));
-    await page.locator('#pause').click();
     assert.equal(await page.locator('#countdown-time').textContent(), '00:00:01');
     await page.clock.runFor(1000);
     assert.equal(await page.locator('#countdown-label').textContent(), '距离结束');
@@ -27,6 +26,6 @@ const { pathToFileURL } = require('node:url');
     await page.waitForFunction(() => EEDemo.snapshot().ready);
     assert.equal(await page.locator('#countdown-label').textContent(), '活动已结束');
     assert.deepEqual(errors, []);
-    console.log('Display: 2x pixel density, countdown while paused, start/end transitions and reload passed.');
+    console.log('Display: 2x pixel density, countdown independent of animation, start/end transitions and reload passed.');
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

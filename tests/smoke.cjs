@@ -26,7 +26,6 @@ const server = http.createServer((req, res) => {
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(process.env.DEMO_URL || 'http://127.0.0.1:' + server.address().port);
     await page.waitForFunction(() => window.EEDemo?.snapshot().ready);
-    await page.locator('#pause').click();
     await page.mouse.move(0,0);
     const initial = await page.evaluate(() => EEDemo.snapshot());
     assert.equal(initial.teams.length, 50);
@@ -37,7 +36,8 @@ const server = http.createServer((req, res) => {
     assert.equal(initial.positions.length, 50);
     assert(initial.positions.every(p => p.x > 80 && p.x < 1840 && p.y > 350 && p.y < 980));
     assert(initial.teams.every(t => t.status === (t.activeRequests > 0 ? 'active' : 'idle')));
-    assert(initial.teams.some(t => t.tokens === 0 && t.status === 'idle'));
+    assert(initial.teams.every(t => t.tokens === 0 && t.activeRequests === 0 && t.status === 'idle'));
+    assert.equal(initial.totalTokens, 0);
     // Every combined label + desk stays separate from all other workstations.
     for(let i=0;i<50;i++) for(let j=i+1;j<50;j++) {
       const a=initial.positions[i],b=initial.positions[j];
@@ -66,18 +66,12 @@ const server = http.createServer((req, res) => {
     const box = await page.locator('#screen').boundingBox();
     assert(box.x >= -1 && box.y >= -1 && box.width <= 1367 && box.height <= 769);
     await page.screenshot({path:path.join(root,'qa','tracks50-projector.png')});
-    await page.locator('#pause').click();
-    let completed=false,started=false;
-    for(let i=0;i<16;i++) {
+    for(let i=0;i<4;i++) {
       await page.waitForTimeout(500);
       const live=await page.evaluate(() => EEDemo.snapshot());
-      assert(live.teams.every(t => t.status === (t.activeRequests > 0 ? 'active' : 'idle')));
-      assert.equal(live.totalTokens,live.teams.reduce((sum,t)=>sum+t.tokens,0));
-      completed ||= live.teams.some(t=>t.tokens>initial.teams[t.id-1].tokens && t.activeRequests===0 && t.status==='idle');
-      started ||= live.teams.some(t=>initial.teams[t.id-1].activeRequests===0 && t.activeRequests>0);
+      assert(live.teams.every(t => t.tokens===0 && t.activeRequests===0 && t.status==='idle'));
+      assert.equal(live.totalTokens,0,'usage remains zero until real data is connected');
     }
-    assert(completed,'completed requests return to rest');
-    assert(started,'idle teams become active only when a request starts');
     await page.locator('#fullscreen').click();
     assert(await page.evaluate(() => Boolean(document.fullscreenElement)));
     await page.evaluate(() => document.exitFullscreen());
@@ -87,7 +81,7 @@ const server = http.createServer((req, res) => {
       assert.equal((await page.evaluate(()=>EEDemo.snapshot())).teams.length,50);
     }
     assert.deepEqual(errors, []);
-    console.log(JSON.stringify({pass:true,teams:50,tracks:initial.tracks.map(t=>({name:t.name,count:t.teamCount})),tokensOnly:true,allSeatsClickable:true,completed,started,viewport:box,errors}));
+    console.log(JSON.stringify({pass:true,teams:50,zeroUsageUntilIntegration:true,tracks:initial.tracks.map(t=>({name:t.name,count:t.teamCount})),tokensOnly:true,allSeatsClickable:true,viewport:box,errors}));
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));

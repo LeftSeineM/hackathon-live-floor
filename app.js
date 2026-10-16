@@ -3,7 +3,7 @@
 const $ = s => document.querySelector(s);
 const W=1920,H=1080,canvas=$('#scene'),ctx=canvas.getContext('2d');
 const GOLD='#e7b46a',PALE='#fff2dc',MUTED='#9b968a';
-const state={layout:'tracks',paused:false,time:0,last:0,nextTick:1600,selected:null,hover:null,ready:false};
+const state={layout:'tracks',time:0,last:0,frame:0,selected:null,hover:null,ready:false};
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sprites=[];
 const nf=new Intl.NumberFormat('en-US');
@@ -18,10 +18,8 @@ const tracks=[
  {id:'creative',name:'创意整活与数字文娱',x:1260,headerY:674,firstY:790}
 ];
 const teams=Array.from({length:50},(_,i)=>{
- const tokens=46000+Math.floor(random()*105000),activeRequests=i%5===0?0:1;
  return {id:i+1,name:'第 '+String(i+1).padStart(2,'0')+' 组',trackId:tracks[Math.floor(i/10)].id,
- tokens:i===9||i===49?0:tokens,activeRequests:i===9||i===49?0:activeRequests,
- endsAt:2500+random()*5000,sprite:(i+Math.floor(i/6)+Math.floor(i/12)*3)%6,phase:random()*15,pulse:0};
+ tokens:0,activeRequests:0,sprite:(i+Math.floor(i/6)+Math.floor(i/12)*3)%6,phase:random()*15};
 });
 const statusOf=team=>team.activeRequests>0?'active':'idle';
 const fmt=n=>nf.format(n);
@@ -127,28 +125,11 @@ function updateNumbers(){
  $('#total-tokens').textContent=short(teams.reduce((sum,t)=>sum+t.tokens,0));
  if(state.selected!==null)detail(state.selected,false);
 }
-function tick(){
- for(const team of teams){
-  if(team.activeRequests>0)continue;
-  if(random()<.22){team.activeRequests=1+Number(random()>.85);team.endsAt=state.time+2200+random()*4800;}
- }
- $('#sync').textContent='模拟更新 '+new Date().toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})+' · 非真实数据';
-}
-function completeRequests(){
- let changed=false;
- for(const team of teams){
-  if(team.activeRequests>0&&state.time>=team.endsAt){
-   team.tokens+=(160+Math.floor(random()*1150))*team.activeRequests;
-   team.activeRequests=0;changed=true;
-  }
- }
- if(changed)updateNumbers();
-}
 function detail(index,show=true){
  state.selected=index;const t=teams[index];
  $('#detail-name').textContent=t.name;
  $('#detail-track').textContent=tracks.find(track=>track.id===t.trackId).name+' · 演示归属';
- $('#detail-state').textContent=statusOf(t)==='active'?'● API 请求进行中 · 模拟':'● 休息 · 当前没有进行中的请求';
+ $('#detail-state').textContent=statusOf(t)==='active'?'● API 请求进行中':'● 休息 · 当前没有进行中的请求';
  $('#detail-tokens').textContent=fmt(t.tokens);
  if(show){$('#detail').hidden=false;$('#team-select').value=String(index);$('#close-detail').focus();}
  draw();
@@ -156,10 +137,9 @@ function detail(index,show=true){
 function close(){state.selected=null;$('#detail').hidden=true;$('#team-select').value='';draw();}
 function point(event){const r=canvas.getBoundingClientRect();return {x:(event.clientX-r.left)*W/r.width,y:(event.clientY-r.top)*H/r.height};}
 function hit(event){const p=point(event);return positions.findIndex(v=>Math.abs(p.x-v.x)<55&&p.y>v.y-94&&p.y<v.y+57);}
-canvas.addEventListener('click',e=>{const i=hit(e);if(i>=0)detail(i);else close();});canvas.addEventListener('mousemove',e=>{const i=hit(e);state.hover=i>=0?i:null;canvas.style.cursor=i>=0?'pointer':'default';if(state.paused||reduced)draw();});canvas.addEventListener('mouseleave',()=>{state.hover=null;draw();});
+canvas.addEventListener('click',e=>{const i=hit(e);if(i>=0)detail(i);else close();});canvas.addEventListener('mousemove',e=>{const i=hit(e);state.hover=i>=0?i:null;canvas.style.cursor=i>=0?'pointer':'default';if(state.frame===0||reduced)draw();});canvas.addEventListener('mouseleave',()=>{state.hover=null;draw();});
 $('#close-detail').addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 teams.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t.name+' · '+tracks.find(track=>track.id===t.trackId).name;$('#team-select').append(o);});$('#team-select').addEventListener('change',e=>{if(e.target.value!=='')detail(Number(e.target.value));else close();});
-$('#pause').addEventListener('click',e=>{state.paused=!state.paused;e.currentTarget.setAttribute('aria-pressed',String(state.paused));e.currentTarget.textContent=state.paused?'▶ 继续模拟':'Ⅱ 暂停模拟';});
 $('#fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('#sync').textContent='请使用浏览器 F11 进入全屏';}});
 function clock(){
  $('#clock').textContent=new Date().toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})+' CST';
@@ -170,13 +150,20 @@ function clock(){
  $('#countdown').classList.toggle('urgent',timer.urgent);
  $('#countdown-time').setAttribute('aria-label',timer.label+' '+timer.display);
 }
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)clock();});
-function frame(now){const delta=Math.min(100,Math.max(0,now-state.last));state.last=now;if(!state.paused&&!document.hidden){state.time+=delta;completeRequests();if(state.time>=state.nextTick){tick();if(state.selected!==null)detail(state.selected,false);state.nextTick=state.time+1600;}draw();}requestAnimationFrame(frame);}
+function frame(now){
+ if(document.hidden){state.frame=0;state.last=0;return;}
+ const delta=Math.min(100,Math.max(0,now-state.last));state.last=now;state.time+=delta;draw();
+ if(teams.some(team=>team.activeRequests>0))state.frame=requestAnimationFrame(frame);else state.frame=0;
+}
+function animateActiveRequests(){
+ if(!state.frame&&teams.some(team=>team.activeRequests>0)){state.last=0;state.frame=requestAnimationFrame(frame);}
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){clock();animateActiveRequests();}});
 async function load(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('无法载入 '+src));img.src=src;});}
 fit();addEventListener('resize',fit);clock();setInterval(clock,250);updateNumbers();positions=makePositions();
 Promise.all([Promise.all(Array.from({length:6},(_,i)=>load('./assets/characters/char_'+i+'.png'))),load('./assets/gold-planet.webp')]).then(([chars,bg])=>{sprites.push(...chars);planet=bg;state.ready=true;buildBackdrop();draw();$('#load-status').hidden=true;state.last=performance.now();requestAnimationFrame(frame);}).catch(e=>{$('#load-status').textContent=e.message+'。请刷新页面重试。';});
 // Read-only debug surface supports layout and arithmetic QA without exposing credentials.
-window.EEDemo={snapshot:()=>({ready:state.ready,layout:state.layout,paused:state.paused,
+window.EEDemo={snapshot:()=>({ready:state.ready,layout:state.layout,
  tracks:tracks.map(track=>({...track,teamCount:teams.filter(t=>t.trackId===track.id).length})),
  teams:teams.map(t=>({...t,status:statusOf(t)})),positions:positions.map(p=>({...p})),
  totalTokens:teams.reduce((sum,t)=>sum+t.tokens,0)})};
