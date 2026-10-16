@@ -24,48 +24,70 @@ const server = http.createServer((req, res) => {
     browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
     const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
     page.on('pageerror', error => errors.push(error.message));
-    await page.goto('http://127.0.0.1:' + server.address().port);
+    await page.goto(process.env.DEMO_URL || 'http://127.0.0.1:' + server.address().port);
     await page.waitForFunction(() => window.EEDemo?.snapshot().ready);
     await page.locator('#pause').click();
+    await page.mouse.move(0,0);
     const initial = await page.evaluate(() => EEDemo.snapshot());
-    assert.equal(initial.teams.length, 48);
-    assert.equal(initial.totalTokens, initial.teams.reduce((sum, t) => sum + t.input + t.output, 0));
-    assert.equal(initial.totalRequests, initial.teams.reduce((sum, t) => sum + t.requests, 0));
-    assert.equal(initial.positions.length, 48);
-    assert(initial.positions.every(p => p.x > 90 && p.x < 1830 && p.y > 360 && p.y < 900));
-    await page.screenshot({ path: path.join(root, 'qa', 'desktop-gold.png') });
-    await page.screenshot({ path: path.join(root, 'qa', 'characters-gold.png'), clip: { x: 77, y: 304, width: 566, height: 327 } });
+    assert.equal(initial.teams.length, 50);
+    assert.equal(initial.tracks.length, 5);
+    assert(initial.tracks.every(t => t.teamCount === 10));
+    assert.equal(new Set(initial.teams.map(t => t.id)).size, 50);
+    assert.equal(initial.totalTokens, initial.teams.reduce((sum, t) => sum + t.tokens, 0));
+    assert.equal(initial.positions.length, 50);
+    assert(initial.positions.every(p => p.x > 80 && p.x < 1840 && p.y > 350 && p.y < 980));
+    assert(initial.teams.every(t => t.status === (t.activeRequests > 0 ? 'active' : 'idle')));
+    assert(initial.teams.some(t => t.tokens === 0 && t.status === 'idle'));
+    // Every combined label + desk stays separate from all other workstations.
+    for(let i=0;i<50;i++) for(let j=i+1;j<50;j++) {
+      const a=initial.positions[i],b=initial.positions[j];
+      assert(Math.abs(a.x-b.x)>=106 || Math.abs(a.y-b.y)>=151, 'overlap '+i+','+j);
+    }
+    assert.equal(await page.locator('#total-requests,#detail-requests,#detail-input,#detail-output').count(),0);
+    assert(!/累计调用|账户余额|累计消费|金额/.test(await page.locator('body').innerText()));
+    await page.screenshot({ path: path.join(root, 'qa', 'tracks50-desktop.png') });
+    await page.screenshot({ path: path.join(root, 'qa', 'tracks50-detail.png'), clip: { x: 56, y: 270, width: 608, height: 375 } });
     await page.waitForTimeout(1800);
     assert.deepEqual((await page.evaluate(() => EEDemo.snapshot())).teams, initial.teams);
-    await page.locator('#team-select').selectOption('47');
-    assert.match(await page.locator('#detail-name').textContent(), /48/);
-    assert.equal(await page.locator('#detail-tokens').textContent(), (initial.teams[47].input + initial.teams[47].output).toLocaleString('en-US'));
+    // Click all labels to ensure group/usage ownership matches every rendered seat.
+    for(let i=0;i<50;i++) {
+      const p=initial.positions[i];
+      await page.mouse.click(p.x,p.y-73);
+      assert.equal(await page.locator('#detail-name').textContent(),initial.teams[i].name);
+      assert.equal(await page.locator('#detail-tokens').textContent(),initial.teams[i].tokens.toLocaleString('en-US'));
+      await page.keyboard.press('Escape');
+    }
+    await page.locator('#team-select').selectOption('49');
+    assert.match(await page.locator('#detail-track').textContent(), /创意整活与数字文娱/);
+    assert.match(await page.locator('#detail-state').textContent(), /休息/);
     await page.keyboard.press('Escape');
-    assert.equal(await page.locator('#detail').isVisible(), false);
-    await page.mouse.click(initial.positions[0].x, initial.positions[0].y - 60);
-    assert.match(await page.locator('#detail-name').textContent(), /01/);
-    await page.screenshot({ path: path.join(root, 'qa', 'detail-gold.png') });
-    await page.keyboard.press('Escape');
-    await page.locator('[data-layout=islands]').click();
-    assert.equal((await page.evaluate(() => EEDemo.snapshot())).layout, 'islands');
-    await page.screenshot({ path: path.join(root, 'qa', 'islands-gold.png') });
-    await page.locator('[data-layout=auditorium]').click();
-    await page.setViewportSize({ width: 1366, height: 768 });
+    await page.setViewportSize({width:1366,height:768});
     await page.waitForFunction(() => document.querySelector('#screen').getBoundingClientRect().width < 1367);
     const box = await page.locator('#screen').boundingBox();
     assert(box.x >= -1 && box.y >= -1 && box.width <= 1367 && box.height <= 769);
-    await page.screenshot({ path: path.join(root, 'qa', 'projector-1366.png') });
+    await page.screenshot({path:path.join(root,'qa','tracks50-projector.png')});
     await page.locator('#pause').click();
-    await page.waitForTimeout(1900);
-    assert((await page.evaluate(() => EEDemo.snapshot())).totalTokens > initial.totalTokens);
+    let completed=false,started=false;
+    for(let i=0;i<16;i++) {
+      await page.waitForTimeout(500);
+      const live=await page.evaluate(() => EEDemo.snapshot());
+      assert(live.teams.every(t => t.status === (t.activeRequests > 0 ? 'active' : 'idle')));
+      assert.equal(live.totalTokens,live.teams.reduce((sum,t)=>sum+t.tokens,0));
+      completed ||= live.teams.some(t=>t.tokens>initial.teams[t.id-1].tokens && t.activeRequests===0 && t.status==='idle');
+      started ||= live.teams.some(t=>initial.teams[t.id-1].activeRequests===0 && t.activeRequests>0);
+    }
+    assert(completed,'completed requests return to rest');
+    assert(started,'idle teams become active only when a request starts');
     await page.locator('#fullscreen').click();
     assert(await page.evaluate(() => Boolean(document.fullscreenElement)));
     await page.evaluate(() => document.exitFullscreen());
-    await page.goto(require('node:url').pathToFileURL(path.join(root, 'index.html')).href);
-    await page.waitForFunction(() => window.EEDemo?.snapshot().ready);
-    assert.equal((await page.evaluate(() => EEDemo.snapshot())).teams.length, 48);
+    if(!process.env.DEMO_URL){
+      await page.goto(require('node:url').pathToFileURL(path.join(root,'index.html')).href);
+      await page.waitForFunction(()=>window.EEDemo?.snapshot().ready);
+      assert.equal((await page.evaluate(()=>EEDemo.snapshot())).teams.length,50);
+    }
     assert.deepEqual(errors, []);
-    console.log(JSON.stringify({ pass: true, teams: initial.teams.length, tokens: initial.totalTokens, requests: initial.totalRequests, viewport: box, errors }));
+    console.log(JSON.stringify({pass:true,teams:50,tracks:initial.tracks.map(t=>({name:t.name,count:t.teamCount})),tokensOnly:true,allSeatsClickable:true,completed,started,viewport:box,errors}));
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
