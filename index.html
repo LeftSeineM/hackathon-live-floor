@@ -1,17 +1,17 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090a0c"><meta name="description" content="EE黑客松 · 50组像素开发现场。黑金大屏演示，所有用量均为模拟数据。"><title>EE黑客松 · 开发现场</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./styles.css?v=zero-until-live-1017"><script src="./countdown.js?v=zero-until-live-1017" defer></script><script src="./app.js?v=zero-until-live-1017" defer></script></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090a0c"><meta name="description" content="EE黑客松 · 像素开发现场。真实赛道人数与各组 Token 用量。"><title>EE黑客松 · 开发现场</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./styles.css?v=live-survey-1018"><script src="./countdown.js?v=live-survey-1018" defer></script><script src="./app.js?v=live-survey-1018" defer></script></head>
 <body><main id="viewport" aria-label="EE黑客松现场展示"><div id="screen">
-<canvas id="scene" width="1920" height="1080" role="img" aria-label="EE黑客松像素会场：前方大讲台，下方五个赛道共50组各一桌一人，点击工位查看模拟用量。"></canvas>
-<header class="masthead"><div class="wordmark"><span class="ee">EE</span><div>黑客松<small>HACKATHON · BUILD IN PUBLIC</small></div></div><div class="header-right"><span class="demo-label">DEMO / 模拟数据</span><time id="clock" aria-label="北京时间"></time></div></header>
+<canvas id="scene" width="1920" height="1080" role="img" aria-label="EE黑客松像素会场：前方大讲台，下方五个赛道展示真实队伍、人数和 Token，点击工位查看详情。"></canvas>
+<header class="masthead"><div class="wordmark"><span class="ee">EE</span><div>黑客松<small>HACKATHON · BUILD IN PUBLIC</small></div></div><div class="header-right"><span class="demo-label">LIVE / 等待连接</span><time id="clock" aria-label="北京时间"></time></div></header>
 <div class="intro"><span>FROM IDEAS TO REALITY</span><h1>把想法，写成现实。</h1></div>
 <section id="countdown" aria-label="EE黑客松活动倒计时">
 <div class="countdown-heading"><span>EE黑客松</span><span id="countdown-label">距离开场</span></div>
 <div id="countdown-time" role="timer" aria-live="off">--:--:--</div>
 <p class="countdown-schedule">2026.10.18 <strong>13:00—17:00</strong> · 北京时间 <span>时 : 分 : 秒</span></p>
 </section>
-<div class="stage-stats" aria-label="演示统计"><div><strong>50</strong><span>参赛小组 · 5 个赛道</span></div><i></i><div><strong id="total-tokens">—</strong><span>累计 TOKENS · 待接入真实 API</span></div></div>
+<div class="stage-stats" aria-label="现场统计"><div><strong id="total-teams">—</strong><span>已登记小组</span></div><i></i><div><strong id="total-people">—</strong><span>已登记人数</span></div><i></i><div><strong id="total-tokens">—</strong><span id="tokens-caption">累计 TOKENS · 开场后同步</span></div></div>
 <nav class="controls" aria-label="大屏控制"><label class="sr-only" for="team-select">查看小组详情</label><select id="team-select"><option value="">查看小组…</option></select><button id="fullscreen">⛶ 全屏</button></nav>
-<footer class="legend"><span><i class="dot active"></i>请求进行中 <i class="dot idle"></i>休息 <b>·</b> 组号 / 累计 Token · K 千 / M 百万</span><span id="sync">API 未接入 · 当前用量为 0</span></footer>
+<footer class="legend"><span><i class="dot idle"></i>已登记队伍 · 并发状态待接入 <b>·</b> 组号 / 累计 Token · K 千 / M 百万</span><span id="sync">等待问卷同步 · 当前 Token 为 0</span></footer>
 <div id="load-status" role="status">正在打开会场…</div>
-<aside id="detail" hidden aria-label="小组详情"><button id="close-detail" aria-label="关闭详情">×</button><div class="detail-eyebrow">TEAM / DEMO DATA</div><h2 id="detail-name"></h2><p id="detail-track"></p><p id="detail-state"></p><div class="detail-main"><span>累计用量</span><strong id="detail-tokens"></strong><small>TOKENS</small></div><p class="detail-note">当前所有 Token 显示为 0，角色保持休息。活动开始后接入真实 API 用量与进行中请求状态。</p></aside>
+<aside id="detail" hidden aria-label="小组详情"><button id="close-detail" aria-label="关闭详情">×</button><div class="detail-eyebrow">TEAM / LIVE DATA</div><h2 id="detail-name"></h2><p id="detail-track"></p><p id="detail-state"></p><div class="detail-main"><span>累计用量</span><strong id="detail-tokens"></strong><small>TOKENS</small></div><p class="detail-note">当前所有 Token 显示为 0，角色保持休息。开场且开放 API 发放后同步真实用量；接口暂不提供实时并发。</p></aside>
 </div></main><noscript>请启用 JavaScript 以显示像素会场。</noscript></body></html>

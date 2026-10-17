@@ -9,3 +9,6 @@
 .countdown-schedule{margin:0;color:#bdb39f;font:11px/17px Consolas,'Microsoft YaHei',monospace;letter-spacing:.5px}
 .countdown-schedule strong{font-weight:400;color:#dec8a4}.countdown-schedule>span{margin-left:18px;color:#8f826a;letter-spacing:2px}
 #countdown.urgent #countdown-time{color:#ffbd77}#countdown[data-phase=ended] #countdown-time{color:#c6b694}
+
+.stage-stats{gap:18px;max-width:490px}.stage-stats strong{font-size:28px}.stage-stats span{letter-spacing:0}#detail h2{overflow-wrap:anywhere;font-size:24px}.legend{right:500px;font-size:11px}
+#sync{top:0}
