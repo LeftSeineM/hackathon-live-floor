@@ -17,20 +17,25 @@ function sample(counts=[2,8,0,1,2],enabled=false){
   await page.goto(pathToFileURL(path.resolve(__dirname,'../index.html')).href);await page.waitForFunction(()=>EEDemo.snapshot().ready&&EEDemo.snapshot().live);
   let state=await page.evaluate(()=>EEDemo.snapshot());assert.equal(state.teams.length,13);assert.equal(state.peopleCount,data.totals.peopleCount);assert.equal(await page.locator('#total-teams').textContent(),'13');assert(state.teams.every(t=>t.tokens===0&&t.status==='idle'));
   assert.deepEqual(state.tracks.map(t=>t.teamCount),[2,8,0,1,2]);
-  for(let i=0;i<state.positions.length;i++){const p=state.positions[i];assert(p.visible);await page.mouse.click(p.x,p.y-73);assert.equal(await page.locator('#detail-name').textContent(),state.teams[i].name);await page.keyboard.press('Escape');}
+  for(let i=0;i<state.positions.length;i++){const p=state.positions[i];assert(p.visible);await page.mouse.click(p.x,p.y-73*p.scale);assert.equal(await page.locator('#detail-name').textContent(),state.teams[i].name);await page.keyboard.press('Escape');}
   fs.mkdirSync(path.resolve(__dirname,'../qa'),{recursive:true});await page.screenshot({path:path.resolve(__dirname,'../qa/live-registration.png')});
-  // A crowded track must page without squeezing rows or losing teams.
+  // Every team in a crowded track stays visible at the same time.
   data=sample([22,2,0,1,2],true);await page.reload();await page.waitForFunction(()=>EEDemo.snapshot().ready&&EEDemo.snapshot().live);state=await page.evaluate(()=>EEDemo.snapshot());
-  assert.equal(state.teams.length,27);assert.equal(state.tracks[0].teamCount,22);assert.equal(state.positions.filter(p=>p.visible).length,15);assert.equal(state.totalTokens,data.totals.totalTokens);assert(state.teams.every(t=>t.status==='unknown'));
-  for(let i=0;i<state.positions.length;i++)for(let j=i+1;j<state.positions.length;j++){const a=state.positions[i],b=state.positions[j];if(a.visible&&b.visible)assert(Math.abs(a.x-b.x)>=106||Math.abs(a.y-b.y)>=151,'overlapping desks');}
+  assert.equal(state.teams.length,27);assert.equal(state.tracks[0].teamCount,22);assert.equal(state.positions.filter(p=>p.visible).length,27);assert.equal(state.totalTokens,data.totals.totalTokens);assert(state.teams.every(t=>t.status==='unknown'));
+  for(let i=0;i<state.positions.length;i++)for(let j=i+1;j<state.positions.length;j++){const a=state.positions[i],b=state.positions[j];assert(Math.abs(a.x-b.x)>=55*(a.scale+b.scale)-.01||Math.abs(a.y-b.y)>=152*a.scale-.01,'overlapping desks');}
+  for(let i=0;i<state.positions.length;i++){const p=state.positions[i];await page.mouse.click(p.x,p.y-73*p.scale);assert.equal(await page.locator('#detail-name').textContent(),state.teams[i].name);await page.keyboard.press('Escape');}
   await page.locator('#team-select').selectOption('21');await page.waitForFunction(()=>EEDemo.snapshot().positions[21].visible);assert.equal(await page.locator('#detail-tokens').textContent(),'2,200');assert.match(await page.locator('#detail-state').textContent(),/未知/);
   assert.equal(await page.locator('#detail-track').textContent(),'科研科创 · 2 人 · 第 22 组');await page.keyboard.press('Escape');
-  await page.screenshot({path:path.resolve(__dirname,'../qa/live-tokens-paged.png')});
+  await page.mouse.move(0,0);await page.screenshot({path:path.resolve(__dirname,'../qa/live-tokens-all-teams.png')});
+  data=sample([40,10,5,12,8],true);await page.reload();await page.waitForFunction(()=>EEDemo.snapshot().ready&&EEDemo.snapshot().live);state=await page.evaluate(()=>EEDemo.snapshot());
+  assert.equal(state.teams.length,75);assert.equal(state.positions.filter(p=>p.visible).length,75);assert(state.positions[0].scale<1);
+  for(let i=0;i<state.positions.length;i++){const p=state.positions[i];await page.mouse.click(p.x,p.y-73*p.scale);assert.equal(await page.locator('#detail-name').textContent(),state.teams[i].name);await page.keyboard.press('Escape');}
+  await page.mouse.move(0,0);await page.screenshot({path:path.resolve(__dirname,'../qa/live-75-teams.png')});
   await page.setViewportSize({width:1366,height:768});await page.waitForFunction(()=>document.querySelector('#screen').getBoundingClientRect().width<1367);const box=await page.locator('#screen').boundingBox();assert(box.width<=1367&&box.height<=769);
   assert(!/账户余额|累计消费|金额/.test(await page.locator('body').innerText()));
   // Clock acceleration only tests refresh/error paths; usage remains real snapshot data.
   await page.clock.install();offline=true;await page.clock.runFor(11000);await page.waitForFunction(()=>EEDemo.snapshot().stale);assert.equal((await page.evaluate(()=>EEDemo.snapshot())).totalTokens,data.totals.totalTokens);assert.match(await page.locator('#sync').textContent(),/保留上次数据/);
   offline=false;data=sample([0,0,0,0,0]);await page.clock.runFor(11000);await page.waitForFunction(()=>EEDemo.snapshot().live&&!EEDemo.snapshot().stale&&EEDemo.snapshot().teams.length===0);assert.equal(await page.locator('#total-teams').textContent(),'0');
-  assert.deepEqual(errors,[]);console.log(JSON.stringify({pass:true,realCounts:true,tokenMapping:true,unknownConcurrency:true,crowdedTrackPaging:true,allVisibleSeatsClickable:true,disconnectPreservesSnapshot:true,errors}));
+  assert.deepEqual(errors,[]);console.log(JSON.stringify({pass:true,realCounts:true,tokenMapping:true,unknownConcurrency:true,allTeamsVisible:true,allVisibleSeatsClickable:true,disconnectPreservesSnapshot:true,errors}));
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

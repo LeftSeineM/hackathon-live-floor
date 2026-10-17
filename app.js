@@ -17,7 +17,7 @@ const tracks=[
  {id:'games',name:'游戏类',x:660,headerY:674,firstY:790},
  {id:'creative',name:'创意整活与数字文娱',x:1260,headerY:674,firstY:790}
 ];
-tracks.forEach((t,i)=>{t.sourceId=i+1;t.page=0;t.teamCount=0;t.peopleCount=0;});
+tracks.forEach((t,i)=>{t.sourceId=i+1;t.teamCount=0;t.peopleCount=0;});
 const teams=[];
 const statusOf=team=>team.activeRequests===null?'unknown':team.activeRequests>0?'active':'idle';
 const fmt=n=>n===null?'—':nf.format(n);
@@ -42,13 +42,15 @@ function text(s,x,y,size,color=PALE,align='center',bold=false){ctx.fillStyle=col
 function poly(points,fill,stroke){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}}
 function ellipse(x,y,rx,ry,color){ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
 function makePositions(){
+ const arranged=window.EEFloorLayout.arrangeFloor(tracks);
+ for(const track of tracks)Object.assign(track,arranged.find(t=>t.id===track.id));
+ const cursors=new Map();
  return teams.map(team=>{
   const track=tracks.find(t=>t.id===team.trackId);
-  const local=teams.filter(t=>t.trackId===team.trackId).findIndex(t=>t.id===team.id);
-  return {...seat(track,local%10),visible:Math.floor(local/10)===track.page};
+  const local=cursors.get(team.trackId)||0;cursors.set(team.trackId,local+1);
+  return track.seats[local];
  });
 }
-function seat(track,index){return {x:track.x+[-235,-125,0,125,235][index%5],y:track.firstY+Math.floor(index/5)*(track.headerY>500?160:170),flip:index%5>=3};}
 function speaker(x,y){rect(x,y,37,91,'#080a0c');rect(x+3,y+3,31,80,'#222426');for(let i=0;i<2;i++){ellipse(x+18,y+24+i*36,11,12,'#080a0b');ellipse(x+18,y+24+i*36,6,7,'#393a35');}rect(x+3,y+87,31,4,'#8e7044');}
 let planet;
 const backdrop=document.createElement('canvas');backdrop.width=W;backdrop.height=H;const bctx=backdrop.getContext('2d');
@@ -64,11 +66,9 @@ ctx.fillStyle=floor;ctx.fillRect(0,260,W,760);
 for(const track of tracks){
  const glow=ctx.createRadialGradient(track.x,track.firstY+100,20,track.x,track.firstY+100,310);
  glow.addColorStop(0,'#e7b46a06');glow.addColorStop(1,'#e7b46a00');ctx.fillStyle=glow;
- ctx.fillRect(track.x-300,track.headerY-8,600,355);
+ ctx.fillRect(track.x-track.width/2,track.headerY-8,track.width,track.height);
  text(track.name,track.x,track.headerY,22,'#e8c68e','center',true);
- text('TRACK 0'+(tracks.indexOf(track)+1),track.x-266,track.headerY,10,'#7b705d','left');
- const pages=Math.max(1,Math.ceil(track.teamCount/10));
- text(state.live?track.teamCount+' 组 · '+track.peopleCount+' 人'+(pages>1?' · '+(track.page+1)+'/'+pages+' 页':''):'等待登记数据',track.x,track.headerY+35,15,'#cbb68b');
+ text(state.live?track.teamCount+' 组 · '+track.peopleCount+' 人':'等待登记数据',track.x,track.headerY+29,15,'#cbb68b');
  line(track.x-25,track.headerY+16,track.x+25,track.headerY+16,'#b4945c70');
 }
 ctx.save();ctx.translate(0,34);ctx.scale(1,.73);
@@ -92,7 +92,7 @@ bctx.clearRect(0,0,backdrop.width,backdrop.height);bctx.drawImage(canvas,0,0);
 }
 function character(team,x,y,t,flip=false,scale=3){const source=sprites[team.sprite];const f=statusOf(team)==='active'?3+Math.floor(t/230+team.phase)%2:1;ctx.save();ctx.translate(Math.round(x),Math.round(y));if(flip)ctx.scale(-1,1);ctx.imageSmoothingEnabled=false;ctx.drawImage(source,f*16,64,16,32,-8*scale,-16*scale,16*scale,32*scale);ctx.restore();}
 function station(team,p,t,index){const {x,y,flip}=p;const facing=flip?-1:1;const focus=index===state.selected||index===state.hover;
-ctx.save();ctx.translate(x,y);ctx.save();ctx.scale(.8,.8);
+ctx.save();ctx.translate(x,y);ctx.scale(p.scale,p.scale);ctx.save();ctx.scale(.8,.8);
 ellipse(0,56,62,13,'#0005');
 // Chair with legs and cushion, then character and desk in the same depth plane.
 rect(-31*facing-12,24,25,21,'#454b50');rect(-31*facing-14,19,29,6,'#646a6d');rect(-31*facing-9,43,3,15,'#757b7e');rect(-31*facing+7,43,3,15,'#757b7e');
@@ -121,7 +121,7 @@ line(0,labelY+42,0,-44,focus?'#e7b46a':'#6a5a3e');
 if(focus){line(-35,57,35,57,'#f1cc84',2);}
 ctx.restore();}
 function draw(){if(!state.ready)return;ctx.drawImage(backdrop,0,0,W,H);
- for(const track of tracks){const count=teams.filter(t=>t.trackId===track.id).length,shown=Math.max(0,Math.min(10,count-track.page*10));for(let i=shown;i<10;i++){const p=seat(track,i);rect(p.x-38,p.y+20,76,7,'#303336');line(p.x-38,p.y+20,p.x+38,p.y+20,'#695638');rect(p.x-32,p.y+27,4,26,'#34393d');rect(p.x+28,p.y+27,4,26,'#34393d');text('待入席',p.x,p.y-20,12,'#5f605e');}}
+ for(const track of tracks)if(!track.teamCount)text(state.live?'暂无登记小组':'等待登记数据',track.x,track.headerY+62,12,'#6f706c');
  positions.forEach((p,i)=>{if(p.visible)station(teams[i],p,reduced?0:state.time,i);});}
 function updateNumbers(){
  const totals=state.snapshot?.totals;
@@ -139,13 +139,12 @@ function detail(index,show=true){
  $('#detail-tokens').textContent=fmt(t.tokens);
  const notes={held:'开场且后台开放 API 发放后同步，当前按要求显示 0。',unassigned:'本组尚未分配 API，当前显示 0。',pending:'等待首次有效用量，请稍后。',stale:'查询暂未更新，保留上次有效累计值。',invalid:'已分配密钥暂时无法查询。',unsupported:'该 API 来源暂未接入用量统计。',limited:'上游查询限流，等待重试。',error:'上游查询失败，等待重试。',ok:'密钥自上游记录以来的累计 Token；实时并发暂未接入。'};
  $('.detail-note').textContent=(notes[t.usageState]||'等待同步')+(t.updatedAt?' 更新：'+new Date(t.updatedAt).toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}):'');
- if(show){const track=tracks.find(v=>v.id===t.trackId),local=teams.filter(v=>v.trackId===t.trackId).findIndex(v=>v.id===t.id);track.page=Math.floor(local/10);positions=makePositions();if(state.ready)buildBackdrop();}
  if(show){$('#detail').hidden=false;$('#team-select').value=String(index);$('#close-detail').focus();}
  draw();
 }
 function close(){state.selected=null;$('#detail').hidden=true;$('#team-select').value='';draw();}
 function point(event){const r=canvas.getBoundingClientRect();return {x:(event.clientX-r.left)*W/r.width,y:(event.clientY-r.top)*H/r.height};}
-function hit(event){const p=point(event);return positions.findIndex(v=>v.visible&&Math.abs(p.x-v.x)<55&&p.y>v.y-94&&p.y<v.y+57);}
+function hit(event){const p=point(event);return positions.findIndex(v=>Math.abs(p.x-v.x)<55*v.scale&&p.y>v.y-94*v.scale&&p.y<v.y+57*v.scale);}
 canvas.addEventListener('click',e=>{const i=hit(e);if(i>=0)detail(i);else close();});canvas.addEventListener('mousemove',e=>{const i=hit(e);state.hover=i>=0?i:null;canvas.style.cursor=i>=0?'pointer':'default';if(state.frame===0||reduced)draw();});canvas.addEventListener('mouseleave',()=>{state.hover=null;draw();});
 $('#close-detail').addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 function rebuildSelect(){const select=$('#team-select');select.replaceChildren(new Option('查看小组…',''));teams.forEach((t,i)=>select.append(new Option('第 '+t.id+' 组 · '+t.name,i)));select.value=state.selected===null?'':String(state.selected);}
@@ -174,8 +173,7 @@ function applySnapshot(data){
  const ids=new Set(),trackIds=new Set(data.tracks.map(t=>t.id));
  for(const t of data.teams){if(!Number.isSafeInteger(t.id)||ids.has(t.id)||!trackIds.has(t.trackId)||typeof t.displayName!=='string'||!Number.isSafeInteger(t.peopleCount)||t.peopleCount<0||!(t.totalTokens===null||typeof t.totalTokens==='number'&&Number.isFinite(t.totalTokens)&&t.totalTokens>=0))throw Error('snapshot');ids.add(t.id);}
  const previousId=teams[state.selected]?.id;
- const previousPages=new Map(tracks.map(t=>[t.sourceId,t.page]));
- tracks.splice(0,tracks.length,...data.tracks.map((t,i)=>({...t,sourceId:t.id,id:String(t.id),x:i<3?[360,960,1560][i]:(data.tracks.length===5?[660,1260][i-3]:[360,960,1560][i-3]),headerY:i<3?284:674,firstY:i<3?420:810,page:Math.min(previousPages.get(t.id)||0,Math.max(0,Math.ceil(t.teamCount/10)-1))})));
+ tracks.splice(0,tracks.length,...data.tracks.map(t=>({...t,sourceId:t.id,id:String(t.id),teamCount:data.teams.filter(team=>team.trackId===t.id).length})));
  teams.splice(0,teams.length,...data.teams.map(t=>({id:t.id,name:t.displayName,trackId:String(t.trackId),peopleCount:t.peopleCount,tokens:t.totalTokens,activeRequests:t.activeRequests===0?0:null,usageState:t.usageState,updatedAt:t.updatedAt,sprite:(t.id-1)%6,phase:0})));
  state.snapshot=data;state.live=true;state.stale=false;state.selected=previousId===undefined?null:teams.findIndex(t=>t.id===previousId);if(state.selected===-1){state.selected=null;$('#detail').hidden=true;}state.hover=null;
  $('.demo-label').textContent='LIVE / 真实登记';positions=makePositions();rebuildSelect();updateNumbers();if(state.ready){buildBackdrop();draw();}
@@ -187,7 +185,6 @@ async function poll(){
  catch{state.stale=true;$('#sync').textContent=state.live?'连接暂未更新 · 保留上次数据':'等待连接问卷系统 · 当前 Token 为 0';$('.demo-label').textContent=state.live?'LIVE / 数据待更新':'LIVE / 等待连接';}
  setTimeout(poll,10000);
 }
-setInterval(()=>{if(!state.live||state.selected!==null||document.hidden)return;let changed=false;for(const t of tracks){const pages=Math.ceil(t.teamCount/10);if(pages>1){t.page=(t.page+1)%pages;changed=true;}}if(changed){positions=makePositions();if(state.ready){buildBackdrop();draw();}}},12000);
 async function load(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('无法载入 '+src));img.src=src;});}
 fit();addEventListener('resize',fit);clock();setInterval(clock,250);updateNumbers();positions=makePositions();
 Promise.all([Promise.all(Array.from({length:6},(_,i)=>load('./assets/characters/char_'+i+'.png'))),load('./assets/gold-planet.webp')]).then(([chars,bg])=>{sprites.push(...chars);planet=bg;state.ready=true;buildBackdrop();draw();$('#load-status').hidden=true;state.last=performance.now();requestAnimationFrame(frame);}).catch(e=>{$('#load-status').textContent=e.message+'。请刷新页面重试。';});
