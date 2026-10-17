@@ -9,10 +9,11 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
    const type={'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp'}[path.extname(file)];return route.fulfill({body:fs.readFileSync(file),contentType:type});
   });
   const response=page.waitForResponse(r=>r.url()==='https://wenjuan.leftseinem.dpdns.org/api/live-floor'&&r.status()===200);
-  await page.goto('https://leftseinem.github.io/hackathon-live-floor/?v=all-teams-1018');const raw=await (await response).json();
+  await page.goto('https://leftseinem.github.io/hackathon-live-floor/?v=choose-avatar-1018');const raw=await (await response).json();
   await page.waitForFunction(()=>window.EEDemo?.snapshot().ready&&EEDemo.snapshot().live);const state=await page.evaluate(()=>EEDemo.snapshot());
   assert.equal(state.teams.length,raw.totals.teamCount);assert.equal(state.peopleCount,raw.totals.peopleCount);assert.equal(state.totalTokens,raw.totals.totalTokens);
   assert.equal(state.positions.length,state.teams.length);assert(state.positions.every(p=>p.visible));
+  assert.equal(await page.locator('.appearance-choice').count(),6);assert(state.teams.every(t=>Number.isInteger(t.sprite)&&t.sprite>=0&&t.sprite<6));
   assert.deepEqual(state.tracks.map(t=>[t.teamCount,t.peopleCount]),raw.tracks.map(t=>[t.teamCount,t.peopleCount]));
   if(!raw.usageEnabled)assert(state.teams.every(t=>t.tokens===0&&t.activeRequests===0));
   for(const forbidden of ['apiKey','claimToken','student_id','actual_cost','quota','phone','email'])assert(!JSON.stringify(raw).includes(forbidden));

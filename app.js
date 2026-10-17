@@ -7,8 +7,8 @@ const state={layout:'tracks',time:0,last:0,frame:0,selected:null,hover:null,read
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sprites=[];
 const nf=new Intl.NumberFormat('en-US');
-let seed=41016;
-function random(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+let appearanceStorage=null;try{appearanceStorage=window.localStorage;}catch{}
+const appearances=window.EEAppearances.createAppearanceStore({storage:appearanceStorage});
 // Real track membership and counts come from the questionnaire's sanitized snapshot.
 const tracks=[
  {id:'research',name:'科研科创',x:360,headerY:284,firstY:400},
@@ -137,12 +137,34 @@ function detail(index,show=true){
  $('#detail-track').textContent=tracks.find(track=>track.id===t.trackId).name+' · '+t.peopleCount+' 人 · 第 '+t.id+' 组';
  $('#detail-state').textContent=statusOf(t)==='unknown'?'● 实时请求状态未知':statusOf(t)==='active'?'● API 请求进行中':'● 休息';
  $('#detail-tokens').textContent=fmt(t.tokens);
+ updateAppearancePicker(t);
  const notes={held:'开场且后台开放 API 发放后同步，当前按要求显示 0。',unassigned:'本组尚未分配 API，当前显示 0。',pending:'等待首次有效用量，请稍后。',stale:'查询暂未更新，保留上次有效累计值。',invalid:'已分配密钥暂时无法查询。',unsupported:'该 API 来源暂未接入用量统计。',limited:'上游查询限流，等待重试。',error:'上游查询失败，等待重试。',ok:'密钥自上游记录以来的累计 Token；实时并发暂未接入。'};
  $('.detail-note').textContent=(notes[t.usageState]||'等待同步')+(t.updatedAt?' 更新：'+new Date(t.updatedAt).toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}):'');
  if(show){$('#detail').hidden=false;$('#team-select').value=String(index);$('#close-detail').focus();}
  draw();
 }
 function close(){state.selected=null;$('#detail').hidden=true;$('#team-select').value='';draw();}
+function updateAppearancePicker(team){
+ for(const button of document.querySelectorAll('.appearance-choice'))button.setAttribute('aria-pressed',String(Number(button.dataset.sprite)===team.sprite));
+ $('#appearance-current').textContent='形象 '+String(team.sprite+1).padStart(2,'0');
+ $('#appearance-save').textContent=appearances.persistent?'已记住形象 · 仅保存在当前浏览器':'本次页面内有效 · 浏览器未允许保存';
+}
+function changeAppearance(value){
+ const team=teams[state.selected];if(!team)return;
+ team.sprite=value==='random'?appearances.reroll(team.id):appearances.set(team.id,value);
+ updateAppearancePicker(team);draw();
+ $('#appearance-feedback').textContent='第 '+team.id+' 组已切换为形象 '+(team.sprite+1)+(appearances.persistent?'，已保存':'，仅本次页面有效');
+}
+function buildAppearancePicker(){
+ const grid=$('#appearance-options');
+ sprites.forEach((source,index)=>{
+  const button=document.createElement('button');button.type='button';button.className='appearance-choice';button.dataset.sprite=String(index);button.setAttribute('aria-label','切换为形象 '+(index+1));button.setAttribute('aria-pressed','false');
+  const preview=document.createElement('canvas');preview.width=48;preview.height=96;preview.setAttribute('aria-hidden','true');const c=preview.getContext('2d');c.imageSmoothingEnabled=false;c.drawImage(source,16,64,16,32,0,0,48,96);
+  const label=document.createElement('span');label.textContent=String(index+1).padStart(2,'0');button.append(preview,label);button.addEventListener('click',()=>changeAppearance(index));grid.append(button);
+ });
+ if(state.selected!==null)updateAppearancePicker(teams[state.selected]);
+}
+$('#appearance-random').addEventListener('click',()=>changeAppearance('random'));
 function point(event){const r=canvas.getBoundingClientRect();return {x:(event.clientX-r.left)*W/r.width,y:(event.clientY-r.top)*H/r.height};}
 function hit(event){const p=point(event);return positions.findIndex(v=>Math.abs(p.x-v.x)<55*v.scale&&p.y>v.y-94*v.scale&&p.y<v.y+57*v.scale);}
 canvas.addEventListener('click',e=>{const i=hit(e);if(i>=0)detail(i);else close();});canvas.addEventListener('mousemove',e=>{const i=hit(e);state.hover=i>=0?i:null;canvas.style.cursor=i>=0?'pointer':'default';if(state.frame===0||reduced)draw();});canvas.addEventListener('mouseleave',()=>{state.hover=null;draw();});
@@ -174,7 +196,7 @@ function applySnapshot(data){
  for(const t of data.teams){if(!Number.isSafeInteger(t.id)||ids.has(t.id)||!trackIds.has(t.trackId)||typeof t.displayName!=='string'||!Number.isSafeInteger(t.peopleCount)||t.peopleCount<0||!(t.totalTokens===null||typeof t.totalTokens==='number'&&Number.isFinite(t.totalTokens)&&t.totalTokens>=0))throw Error('snapshot');ids.add(t.id);}
  const previousId=teams[state.selected]?.id;
  tracks.splice(0,tracks.length,...data.tracks.map(t=>({...t,sourceId:t.id,id:String(t.id),teamCount:data.teams.filter(team=>team.trackId===t.id).length})));
- teams.splice(0,teams.length,...data.teams.map(t=>({id:t.id,name:t.displayName,trackId:String(t.trackId),peopleCount:t.peopleCount,tokens:t.totalTokens,activeRequests:t.activeRequests===0?0:null,usageState:t.usageState,updatedAt:t.updatedAt,sprite:(t.id-1)%6,phase:0})));
+ teams.splice(0,teams.length,...data.teams.map(t=>({id:t.id,name:t.displayName,trackId:String(t.trackId),peopleCount:t.peopleCount,tokens:t.totalTokens,activeRequests:t.activeRequests===0?0:null,usageState:t.usageState,updatedAt:t.updatedAt,sprite:appearances.get(t.id),phase:0})));
  state.snapshot=data;state.live=true;state.stale=false;state.selected=previousId===undefined?null:teams.findIndex(t=>t.id===previousId);if(state.selected===-1){state.selected=null;$('#detail').hidden=true;}state.hover=null;
  $('.demo-label').textContent='LIVE / 真实登记';positions=makePositions();rebuildSelect();updateNumbers();if(state.ready){buildBackdrop();draw();}
  const pending=data.totals.teamCount-data.totals.knownUsageTeams;
@@ -187,7 +209,7 @@ async function poll(){
 }
 async function load(src){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('无法载入 '+src));img.src=src;});}
 fit();addEventListener('resize',fit);clock();setInterval(clock,250);updateNumbers();positions=makePositions();
-Promise.all([Promise.all(Array.from({length:6},(_,i)=>load('./assets/characters/char_'+i+'.png'))),load('./assets/gold-planet.webp')]).then(([chars,bg])=>{sprites.push(...chars);planet=bg;state.ready=true;buildBackdrop();draw();$('#load-status').hidden=true;state.last=performance.now();requestAnimationFrame(frame);}).catch(e=>{$('#load-status').textContent=e.message+'。请刷新页面重试。';});
+Promise.all([Promise.all(Array.from({length:6},(_,i)=>load('./assets/characters/char_'+i+'.png'))),load('./assets/gold-planet.webp')]).then(([chars,bg])=>{sprites.push(...chars);buildAppearancePicker();planet=bg;state.ready=true;buildBackdrop();draw();$('#load-status').hidden=true;state.last=performance.now();requestAnimationFrame(frame);}).catch(e=>{$('#load-status').textContent=e.message+'。请刷新页面重试。';});
 poll();
 // Read-only debug surface supports layout and arithmetic QA without exposing credentials.
 window.EEDemo={snapshot:()=>({ready:state.ready,layout:state.layout,live:state.live,stale:state.stale,peopleCount:state.snapshot?.totals.peopleCount??null,
