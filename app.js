@@ -39,6 +39,20 @@ function fit(){
 function rect(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
 function line(x1,y1,x2,y2,color,width=1){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
 function text(s,x,y,size,color=PALE,align='center',bold=false){ctx.fillStyle=color;ctx.font=(bold?'700 ':'')+size+'px "Microsoft YaHei",sans-serif';ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(s,x,y);}
+function teamNameLines(name){
+ ctx.font='12px "Microsoft YaHei",sans-serif';
+ if(ctx.measureText(name).width<=92)return [name];
+ ctx.font='11px "Microsoft YaHei",sans-serif';
+ const chars=Array.from(name),lines=[''];
+ for(let i=0;i<chars.length;i++){
+  const last=lines.length-1;
+  if(ctx.measureText(lines[last]+chars[i]).width<=92){lines[last]+=chars[i];continue;}
+  if(lines.length===1){lines.push(chars[i]);continue;}
+  while(ctx.measureText(lines[last]+'…').width>92)lines[last]=Array.from(lines[last]).slice(0,-1).join('');
+  lines[last]+='…';break;
+ }
+ return lines;
+}
 function poly(points,fill,stroke){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}}
 function ellipse(x,y,rx,ry,color){ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
 function makePositions(){
@@ -110,13 +124,14 @@ if(statusOf(team)==='active'&&Math.floor(t/460+team.phase)%2===0)rect(dx+29,10,2
 rect(dx+2,29,23,4,'#8e9694');for(let i=0;i<5;i++)rect(dx+4+i*4,30,2,1,'#3b4444');
 rect(dx+62,21,7,10,'#d5c9a7');rect(dx+64,19,3,2,'#8a7351');
 ctx.restore();
-// Group number and usage share one label, attached to this character by a short stem.
+// Team name and usage share one label; long names wrap within the same seat.
 const labelY=-94;
 rect(-52,labelY,104,42,focus?'#25211a':'#17191c');
-rect(-43,labelY+9,4,4,statusOf(team)==='active'?GOLD:'#747c86');
-text('第 '+String(team.id).padStart(2,'0')+' 组',4,labelY+11,12,'#cfc8b8');
-text(short(team.tokens),-8,labelY+29,17,statusOf(team)==='active'?'#f1ce8b':'#c1bba9');
-text('T',36,labelY+30,10,'#99866a');
+const nameLines=teamNameLines(team.name),wrapped=nameLines.length>1;
+nameLines.forEach((name,i)=>text(name,0,labelY+(wrapped?8+i*12:11),wrapped?11:12,'#e3d8c3'));
+rect(-44,labelY+(wrapped?32:27),4,4,statusOf(team)==='active'?GOLD:'#747c86');
+text(short(team.tokens),-8,labelY+(wrapped?34:29),wrapped?14:17,statusOf(team)==='active'?'#f1ce8b':'#c1bba9');
+text('T',36,labelY+(wrapped?34:30),10,'#99866a');
 line(0,labelY+42,0,-44,focus?'#e7b46a':'#6a5a3e');
 if(focus){line(-35,57,35,57,'#f1cc84',2);}
 ctx.restore();}
@@ -167,9 +182,9 @@ function buildAppearancePicker(){
 $('#appearance-random').addEventListener('click',()=>changeAppearance('random'));
 function point(event){const r=canvas.getBoundingClientRect();return {x:(event.clientX-r.left)*W/r.width,y:(event.clientY-r.top)*H/r.height};}
 function hit(event){const p=point(event);return positions.findIndex(v=>Math.abs(p.x-v.x)<55*v.scale&&p.y>v.y-94*v.scale&&p.y<v.y+57*v.scale);}
-canvas.addEventListener('click',e=>{const i=hit(e);if(i>=0)detail(i);else close();});canvas.addEventListener('mousemove',e=>{const i=hit(e);state.hover=i>=0?i:null;canvas.style.cursor=i>=0?'pointer':'default';if(state.frame===0||reduced)draw();});canvas.addEventListener('mouseleave',()=>{state.hover=null;draw();});
+canvas.addEventListener('click',e=>{const i=hit(e);if(i>=0)detail(i);else close();});canvas.addEventListener('mousemove',e=>{const i=hit(e);state.hover=i>=0?i:null;canvas.style.cursor=i>=0?'pointer':'default';canvas.title=i>=0?teams[i].name:'';if(state.frame===0||reduced)draw();});canvas.addEventListener('mouseleave',()=>{state.hover=null;canvas.title='';draw();});
 $('#close-detail').addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
-function rebuildSelect(){const select=$('#team-select');select.replaceChildren(new Option('查看小组…',''));teams.forEach((t,i)=>select.append(new Option('第 '+t.id+' 组 · '+t.name,i)));select.value=state.selected===null?'':String(state.selected);}
+function rebuildSelect(){const select=$('#team-select');select.replaceChildren(new Option('查看小组…',''));teams.forEach((t,i)=>select.append(new Option(t.name,i)));select.value=state.selected===null?'':String(state.selected);}
 $('#team-select').addEventListener('change',e=>{if(e.target.value!=='')detail(Number(e.target.value));else close();});
 $('#fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('#sync').textContent='请使用浏览器 F11 进入全屏';}});
 function clock(){
