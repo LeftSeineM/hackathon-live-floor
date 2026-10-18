@@ -2,7 +2,7 @@
   'use strict';
   // Explicit Beijing offsets keep every display on the same event schedule.
   const start = Date.parse('2026-10-18T13:00:00+08:00');
-  const end = Date.parse('2026-10-18T17:00:00+08:00');
+  const end = Date.parse('2026-10-18T18:00:00+08:00');
   function at(now = Date.now()) {
     const phase = now < start ? 'upcoming' : now < end ? 'live' : 'ended';
     const remaining = Math.max(0, Math.ceil(((phase === 'upcoming' ? start : end) - now) / 1000));

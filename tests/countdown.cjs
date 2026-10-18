@@ -1,11 +1,13 @@
 const assert = require('node:assert/strict');
 const { at, start, end } = require('../countdown.js');
 assert.equal(new Date(start).toISOString(), '2026-10-18T05:00:00.000Z');
-assert.equal(new Date(end).toISOString(), '2026-10-18T09:00:00.000Z');
+assert.equal(new Date(end).toISOString(), '2026-10-18T10:00:00.000Z');
 assert.equal(at(start - 25 * 3600000).display, '25:00:00');
 assert.equal(at(start - 1).display, '00:00:01');
 assert.equal(at(start - 1).label, '距离开场');
-assert.deepEqual(at(start), { phase: 'live', remaining: 14400, label: '距离结束', display: '04:00:00', urgent: false });
+assert.deepEqual(at(start), { phase: 'live', remaining: 18000, label: '距离结束', display: '05:00:00', urgent: false });
+assert.equal(at(Date.parse('2026-10-18T15:00:00+08:00')).display, '03:00:00');
+assert.equal(at(Date.parse('2026-10-18T17:00:00+08:00')).display, '01:00:00');
 assert.equal(at(end - 600001).urgent, false);
 assert.equal(at(end - 600000).urgent, true);
 assert.equal(at(end - 1).display, '00:00:01');
