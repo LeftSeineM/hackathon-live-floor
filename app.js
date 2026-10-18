@@ -10,14 +10,7 @@ const nf=new Intl.NumberFormat('en-US');
 let appearanceStorage=null;try{appearanceStorage=window.localStorage;}catch{}
 const appearances=window.EEAppearances.createAppearanceStore({storage:appearanceStorage});
 // Real track membership and counts come from the questionnaire's sanitized snapshot.
-const tracks=[
- {id:'research',name:'科研科创',x:360,headerY:284,firstY:400},
- {id:'campus',name:'校园学习生活',x:960,headerY:284,firstY:400},
- {id:'public-good',name:'社会公益',x:1560,headerY:284,firstY:400},
- {id:'games',name:'游戏类',x:660,headerY:674,firstY:790},
- {id:'creative',name:'创意整活与数字文娱',x:1260,headerY:674,firstY:790}
-];
-tracks.forEach((t,i)=>{t.sourceId=i+1;t.teamCount=0;t.peopleCount=0;});
+const tracks=[];
 const teams=[];
 const statusOf=team=>team.activeRequests===null?'unknown':team.activeRequests>0?'active':'idle';
 const fmt=n=>n===null?'—':nf.format(n);
@@ -136,7 +129,7 @@ line(0,labelY+42,0,-44,focus?'#e7b46a':'#6a5a3e');
 if(focus){line(-35,57,35,57,'#f1cc84',2);}
 ctx.restore();}
 function draw(){if(!state.ready)return;ctx.drawImage(backdrop,0,0,W,H);
- for(const track of tracks)if(!track.teamCount)text(state.live?'暂无登记小组':'等待登记数据',track.x,track.headerY+62,12,'#6f706c');
+ if(!teams.length)text(state.live?'暂无登记队伍，报名后自动展示':'等待登记数据',W/2,600,18,'#9b968a');
  positions.forEach((p,i)=>{if(p.visible)station(teams[i],p,reduced?0:state.time,i);});}
 function updateNumbers(){
  const totals=state.snapshot?.totals;
@@ -210,7 +203,8 @@ function applySnapshot(data){
  const ids=new Set(),trackIds=new Set(data.tracks.map(t=>t.id));
  for(const t of data.teams){if(!Number.isSafeInteger(t.id)||ids.has(t.id)||!trackIds.has(t.trackId)||typeof t.displayName!=='string'||!Number.isSafeInteger(t.peopleCount)||t.peopleCount<0||!(t.totalTokens===null||typeof t.totalTokens==='number'&&Number.isFinite(t.totalTokens)&&t.totalTokens>=0))throw Error('snapshot');ids.add(t.id);}
  const previousId=teams[state.selected]?.id;
- tracks.splice(0,tracks.length,...data.tracks.map(t=>({...t,sourceId:t.id,id:String(t.id),teamCount:data.teams.filter(team=>team.trackId===t.id).length})));
+ // Re-evaluate on every snapshot so the first signup reveals its track automatically.
+ tracks.splice(0,tracks.length,...data.tracks.map(t=>({...t,sourceId:t.id,id:String(t.id),teamCount:data.teams.filter(team=>team.trackId===t.id).length})).filter(t=>t.teamCount>0));
  teams.splice(0,teams.length,...data.teams.map(t=>({id:t.id,name:t.displayName,trackId:String(t.trackId),peopleCount:t.peopleCount,tokens:t.totalTokens,activeRequests:t.activeRequests===0?0:null,usageState:t.usageState,updatedAt:t.updatedAt,sprite:appearances.get(t.id),phase:0})));
  state.snapshot=data;state.live=true;state.stale=false;state.selected=previousId===undefined?null:teams.findIndex(t=>t.id===previousId);if(state.selected===-1){state.selected=null;$('#detail').hidden=true;}state.hover=null;
  $('.demo-label').textContent='LIVE / 真实登记';positions=makePositions();rebuildSelect();updateNumbers();if(state.ready){buildBackdrop();draw();}

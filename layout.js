@@ -2,6 +2,7 @@
 (function(root){
 'use strict';
 function arrangeFloor(tracks){
+ if(!tracks.length)return [];
  const left=48,top=274,width=1824,height=738,gap=24,heading=58;
  const pitchX=116,pitchY=164,deskHeight=153;
  const count=t=>Math.max(0,Math.floor(t.teamCount||0));
