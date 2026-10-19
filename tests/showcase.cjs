@@ -32,7 +32,16 @@ const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.jso
    else assert.match(await page.locator('.project-no-image').textContent(),/待补充/);
   }
   assert.equal(dataRequests,1);assert.equal(catalog.projects.length,42);
-  assert.equal(catalog.projects.find(p=>p.teamId===29).images.length,0,'unresolved Zhixing cover must not be shown as meetingVAR');
+  assert.equal(catalog.projects.find(p=>p.teamId===29).title,'知行 · 校园通知到行动助手');
+  assert.equal(catalog.projects.find(p=>p.teamId===29).images.length,1,'user confirmed Zhixing as team 29');
+  assert.equal(catalog.projects.find(p=>p.teamId===41).title,'留白 · 日程助手');
+  assert.equal(catalog.projects.find(p=>p.teamId===27).images.length,4);
+  assert.equal(catalog.projects.filter(p=>p.images.length).length,40);
+  await open(27);
+  for(let i=0;i<4;i++){await page.locator('.project-thumbnail').nth(i).click();await page.waitForFunction(()=>{const im=document.querySelector('.project-image-stage img');return im?.complete&&im.naturalWidth>0&&!im.hidden;});assert.match(await page.locator('.project-image-footer').textContent(),new RegExp((i+1)+' / 4'));}
+  await page.screenshot({path:path.join(root,'qa/showcase-team-27.png')});
+  await open(41);await page.waitForFunction(()=>{const im=document.querySelector('.project-image-stage img');return im?.complete&&im.naturalWidth>0&&!im.hidden;});
+  await page.screenshot({path:path.join(root,'qa/showcase-team-41.png')});
   const payload=JSON.stringify(catalog);for(const forbidden of ['student_id','claimToken','apiKey','phone','email','members','C:/Users','D:/EEclaw'])assert(!payload.includes(forbidden));
   for(const project of catalog.projects)for(const item of project.images)assert(fs.existsSync(path.join(root,item.src)));
   await open(22);await page.locator('.project-thumbnail').nth(2).click();assert.equal(await page.locator('.project-thumbnail[aria-pressed=true]').getAttribute('aria-label'),'查看截图 3：黑洞关卡');

@@ -11,7 +11,12 @@
       "title": "青屿Campus",
       "summary": "校园学习与生活整合平台，把论文阅读、学习任务、自动排程、一周日程和专注陪伴连接起来，帮助学生从计划走向执行。校园生活推荐模块使用演示地点，展示需求与时间、预算约束的核对过程。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-04-01.webp",
+          "alt": "Reader论文阅读库"
+        }
+      ]
     },
     {
       "id": "team-5-project",
@@ -22,7 +27,12 @@
       "title": "好奇训练",
       "summary": "离线优先的 Android 健身执行辅助 App，将训练安排、每组重量、组间休息计时和饮食记录放在同一入口；可选联网使用 AI 图片识别。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-05-01.webp",
+          "alt": "饮食与热量记录"
+        }
+      ]
     },
     {
       "id": "team-6-project",
@@ -33,7 +43,12 @@
       "title": "栖学",
       "summary": "校园学习空间发现器，帮助同学围绕时间、空间与信息寻找学习场所。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-06-01.webp",
+          "alt": "栖学校园学习空间"
+        }
+      ]
     },
     {
       "id": "team-7-project",
@@ -92,7 +107,12 @@
       "title": "智能体合作站",
       "summary": "为多人科创中的独立 AI 会话提供共同的项目记忆，将任务、依赖与工作上下文保存在同一后端，支持任务规划、草案编辑和协作交接。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-10-01.webp",
+          "alt": "relay团队协作空间"
+        }
+      ]
     },
     {
       "id": "team-11-project",
@@ -219,7 +239,12 @@
       "title": "此刻",
       "summary": "围绕当下心情提供音乐与 MAD 风格同步字幕，用轻量的视听体验陪伴用户表达情绪。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-16-01.webp",
+          "alt": "此刻音乐首页"
+        }
+      ]
     },
     {
       "id": "team-17-project",
@@ -278,7 +303,12 @@
       "title": "清华人生模拟器",
       "summary": "以清华大学电子工程系的校园生活为起点，在学业、娱乐、健康、人际关系与职业选择间分配资源，通过分支叙事体验不同的人生路径。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-20-01.webp",
+          "alt": "清华人生模拟器"
+        }
+      ]
     },
     {
       "id": "team-21-project",
@@ -381,7 +411,24 @@
       "title": "宵禁",
       "summary": "面向 5–9 人的实时网页派对推理游戏，以淘金小镇为背景，结合隐藏身份、夜间技能、轮流发言与公开投票，并由服务端同步房间状态。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-27-01.webp",
+          "alt": "小镇酒馆首页"
+        },
+        {
+          "src": "./assets/showcase/team-27-02.webp",
+          "alt": "小镇手册与镇民阵营"
+        },
+        {
+          "src": "./assets/showcase/team-27-03.webp",
+          "alt": "杀手阵营角色"
+        },
+        {
+          "src": "./assets/showcase/team-27-04.webp",
+          "alt": "房间准备与圆桌"
+        }
+      ]
     },
     {
       "id": "team-28-project",
@@ -405,10 +452,15 @@
       "teamName": "emmmmm",
       "trackId": 2,
       "trackName": "校园学习生活",
-      "title": "meetingVAR",
-      "summary": "课堂与会议中的重点回放助手，围绕用户关注的问题识别值得保留的时刻，关联字幕、音频、屏幕画面和时间位置，便于会后核对原始证据。",
+      "title": "知行 · 校园通知到行动助手",
+      "summary": "把校园通知、课程公告、实验要求与考试安排转化为可核对的待办事项，保留原文依据并由用户确认入库；提供材料库、任务清单、任务审核与时间风险提醒。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-29-01.webp",
+          "alt": "知行校园通知到行动助手"
+        }
+      ]
     },
     {
       "id": "team-30-project",
@@ -435,7 +487,12 @@
       "title": "雾谜",
       "summary": "万圣节主题悬疑推理游戏，通过场景探索、角色视角切换、线索调查与证据整理推进案件，并依据最终指控进入不同结果。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-33-01.webp",
+          "alt": "雾谜游戏首页"
+        }
+      ]
     },
     {
       "id": "team-34-project",
@@ -446,7 +503,12 @@
       "title": "学习辅助桌宠",
       "summary": "在 OneTHU 上增加 Windows 学习桌宠，将作业任务与截止倒计时悬浮展示，并通过桌宠入口连接本机课程资料工具。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-34-01.webp",
+          "alt": "学习辅助桌宠"
+        }
+      ]
     },
     {
       "id": "team-35-project",
@@ -550,10 +612,15 @@
       "teamName": "planer",
       "trackId": 2,
       "trackName": "校园学习生活",
-      "title": "planer",
-      "summary": "课程规划助手，收集和整理学习安排信息，辅助形成课程与学习计划。",
+      "title": "留白 · 日程助手",
+      "summary": "本地日程规划助手，以滚动七天计划组织日程与事项，先满足固定承诺，再按重点及期限排序；保留受保护时间与任务缓冲，不为填满时间添加任务。",
       "award": false,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-41-01.webp",
+          "alt": "留白日程助手"
+        }
+      ]
     },
     {
       "id": "team-43-project",

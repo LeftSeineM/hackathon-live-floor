@@ -57,6 +57,8 @@ def main():
     root=Path(__file__).resolve().parents[1]
     source=archive/'作品核对.json'
     entries=json.loads(source.read_text(encoding='utf-8'))['entries']
+    confirmations_path=archive/'公开展示确认.json'
+    confirmations=json.loads(confirmations_path.read_text(encoding='utf-8'))['teams'] if confirmations_path.exists() else {}
     if args.floor_snapshot:
         live=json.loads(Path(args.floor_snapshot).read_text(encoding='utf-8-sig'))
     else:
@@ -82,8 +84,16 @@ def main():
         candidates=[p for p in candidates if '拼接' not in p.name]
         covers=sorted((p for p in (archive/'主界面截图').glob(f'{tid:02d} *') if p.suffix.lower() in ['.png','.jpg','.jpeg']),key=lambda p:(p.suffix.lower()!='.png',p.name))
         if not candidates and covers: candidates=[covers[0]]
-        # Archive's 29 cover visibly belongs to the unresolved 知行 project, not meetingVAR.
-        if tid==29: candidates=[]
+        confirmed=confirmations.get(str(tid))
+        # Historical cover was ambiguous; only the owner's explicit confirmation resolves it.
+        if tid==29 and not confirmed: candidates=[]
+        confirmed_labels={}
+        if confirmed:
+            candidates=[]
+            for item in confirmed['images']:
+                path=(archive/item['path']).resolve()
+                if not path.is_relative_to(archive) or not path.is_file():raise ValueError('Invalid confirmed image: '+str(tid))
+                candidates.append(path);confirmed_labels[path]=item['alt']
         images=[]; hashes=set()
         for path in candidates:
             digest=hashlib.sha256(path.read_bytes()).hexdigest()
@@ -94,19 +104,19 @@ def main():
                 picture=ImageOps.exif_transpose(im).convert('RGB')
                 # Publish only the product window, excluding the adjacent personal chat client.
                 if tid==28: picture=picture.crop((0,0,round(picture.width*.499),round(picture.height*.955)))
-                picture.thumbnail((1920,1200),Image.Resampling.LANCZOS)
-                picture.save(dest,'WEBP',quality=88,method=6)
-            label=re.sub(r'^\d+[- ]','',path.stem) if path.parent.name=='界面截图' else e['title']+' · 主界面'
+                picture.thumbnail((1920,2560) if confirmed else (1920,1200),Image.Resampling.LANCZOS)
+                picture.save(dest,'WEBP',quality=90 if confirmed else 88,method=6)
+            label=confirmed_labels.get(path) or (re.sub(r'^\d+[- ]','',path.stem) if path.parent.name=='界面截图' else e['title']+' · 主界面')
             images.append({'src':'./'+dest.relative_to(root).as_posix(),'alt':label})
             audit.append({'teamId':tid,'source':str(path),'sourceSha256':digest,'published':dest.relative_to(root).as_posix()})
             used.append((tid,dest))
-        projects.append({'id':f'team-{tid}-project','teamId':tid,'teamName':e['team'],'trackId':current['trackId'],'trackName':e['track'],'title':e['title'],'summary':SUMMARIES[tid],'award':bool(e['award']),'images':images})
+        projects.append({'id':f'team-{tid}-project','teamId':tid,'teamName':e['team'],'trackId':current['trackId'],'trackName':e['track'],'title':confirmed.get('title',e['title']) if confirmed else e['title'],'summary':confirmed.get('summary',SUMMARIES[tid]) if confirmed else SUMMARIES[tid],'award':bool(e['award']),'images':images})
     data={'version':1,'updatedAt':'2026-10-19','projects':projects}
     expected={p.resolve() for _,p in used}
     for old in images_root.glob('team-*.webp'):
         if old.resolve() not in expected: old.unlink()
     (root/'data/showcase.json').write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    (root/'private-backups/showcase-import-audit.json').write_text(json.dumps({'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'images':audit,'excluded':['知行：编号归属待核','Reader / 留白：截图归属待核'],'unpublishedTeamIds':[e['id'] for e in entries if not e['submitted']]},ensure_ascii=False,indent=2),encoding='utf-8')
+    (root/'private-backups/showcase-import-audit.json').write_text(json.dumps({'sourceSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'images':audit,'confirmedTeamIds':sorted(map(int,confirmations)),'unpublishedTeamIds':[e['id'] for e in entries if not e['submitted']]},ensure_ascii=False,indent=2),encoding='utf-8')
     for page in range((len(used)+11)//12):
         chunk=used[page*12:(page+1)*12]; contact=Image.new('RGB',(1500,4*260),'#202124'); draw=ImageDraw.Draw(contact)
         for i,(tid,file) in enumerate(chunk):
