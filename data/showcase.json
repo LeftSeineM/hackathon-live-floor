@@ -1,0 +1,661 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-19",
+  "projects": [
+    {
+      "id": "team-4-project",
+      "teamId": 4,
+      "teamName": "111队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "青屿Campus",
+      "summary": "校园学习与生活整合平台，把论文阅读、学习任务、自动排程、一周日程和专注陪伴连接起来，帮助学生从计划走向执行。校园生活推荐模块使用演示地点，展示需求与时间、预算约束的核对过程。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-5-project",
+      "teamId": 5,
+      "teamName": "我爱练腿队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "好奇训练",
+      "summary": "离线优先的 Android 健身执行辅助 App，将训练安排、每组重量、组间休息计时和饮食记录放在同一入口；可选联网使用 AI 图片识别。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-6-project",
+      "teamId": 6,
+      "teamName": "正在安装Codex队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "栖学",
+      "summary": "校园学习空间发现器，帮助同学围绕时间、空间与信息寻找学习场所。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-7-project",
+      "teamId": 7,
+      "teamName": "零基础新生一队",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "Equalplay",
+      "summary": "真人对战 AI 的体感街机格斗游戏，用身体动作参与交互，将运动节奏转化为游戏体验。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-07-01.webp",
+          "alt": "EqualPlay实战界面"
+        }
+      ]
+    },
+    {
+      "id": "team-8-project",
+      "teamId": 8,
+      "teamName": "你说的都队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "Course Replay",
+      "summary": "Course Replay 学习材料回顾工具，支持 PDF、PPTX、Markdown 和 TXT 文件上传；提交实现采用 FastAPI、SQLAlchemy 和 SQLite。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-08-01.webp",
+          "alt": "Course Replay主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-9-project",
+      "teamId": 9,
+      "teamName": "flve six seven",
+      "trackId": 1,
+      "trackName": "科研科创",
+      "title": "PathWise",
+      "summary": "面向本科生科研入门，将公开科研资料、技能目录、个人经历证据、团队探索和准备练习串成可操作的流程，帮助学生判断研究方向与需要补足的能力。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-09-01.webp",
+          "alt": "PathWise · 主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-10-project",
+      "teamId": 10,
+      "teamName": "海底小纵队",
+      "trackId": 1,
+      "trackName": "科研科创",
+      "title": "智能体合作站",
+      "summary": "为多人科创中的独立 AI 会话提供共同的项目记忆，将任务、依赖与工作上下文保存在同一后端，支持任务规划、草案编辑和协作交接。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-11-project",
+      "teamId": 11,
+      "teamName": "507队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "清大搭 THUOPAL",
+      "summary": "校园学习辅助平台，整合材料问答、费曼自测、课程学习和论文阅读，将学习资料与主动复习连接起来。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-11-01.webp",
+          "alt": "清大搭材料问答"
+        },
+        {
+          "src": "./assets/showcase/team-11-02.webp",
+          "alt": "清大搭费曼自测"
+        },
+        {
+          "src": "./assets/showcase/team-11-03.webp",
+          "alt": "清大搭课程学习"
+        },
+        {
+          "src": "./assets/showcase/team-11-04.webp",
+          "alt": "清大搭论文阅读"
+        }
+      ]
+    },
+    {
+      "id": "team-12-project",
+      "teamId": 12,
+      "teamName": "Satur队",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "读后续写生成器",
+      "summary": "输入一句话或一段故事开头，生成连续的分支剧情。每个节点提供三种选择，以离奇但美好的结局和 Q 版漫画插画构建互动阅读体验。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-12-01.webp",
+          "alt": "作品标题"
+        },
+        {
+          "src": "./assets/showcase/team-12-02.webp",
+          "alt": "主界面与三步流程"
+        },
+        {
+          "src": "./assets/showcase/team-12-03.webp",
+          "alt": "续写手稿"
+        },
+        {
+          "src": "./assets/showcase/team-12-04.webp",
+          "alt": "故事结局"
+        }
+      ]
+    },
+    {
+      "id": "team-13-project",
+      "teamId": 13,
+      "teamName": "咕咕嘎嘎队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "学习台",
+      "summary": "把作业任务、题面确认、双版本作答、自查依据和课表安排连接起来，帮助学生复习并追踪学习进度。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-13-01.webp",
+          "alt": "学习台 · 主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-14-project",
+      "teamId": 14,
+      "teamName": "给给队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "哪吃",
+      "summary": "整合校内食堂、校外堂食与外卖信息，以位置、饭后返寝方向和人流等条件辅助选餐。包含首页、随机选餐、发现好吃的和觅食地图，并提供 Android 宿主与共用前端。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-14-01.webp",
+          "alt": "首页"
+        },
+        {
+          "src": "./assets/showcase/team-14-02.webp",
+          "alt": "帮我选一顿"
+        },
+        {
+          "src": "./assets/showcase/team-14-03.webp",
+          "alt": "发现好吃的"
+        },
+        {
+          "src": "./assets/showcase/team-14-04.webp",
+          "alt": "觅食地图"
+        }
+      ]
+    },
+    {
+      "id": "team-15-project",
+      "teamId": 15,
+      "teamName": "TSF",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "拾序",
+      "summary": "用 Chrome 右侧知识图组织 AI 对话中的问题、会话与来源关系，让分散在多个会话中的学习内容更容易查找、回顾与继续探索。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-15-01.webp",
+          "alt": "拾序 · 主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-16-project",
+      "teamId": 16,
+      "teamName": "0xNEXT",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "此刻",
+      "summary": "围绕当下心情提供音乐与 MAD 风格同步字幕，用轻量的视听体验陪伴用户表达情绪。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-17-project",
+      "teamId": 17,
+      "teamName": "啊对的哦不队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "EE Radar",
+      "summary": "面向电子系同学的校园资讯与机会管理平台，将公开通知整理为可搜索的资讯、可核对的申请机会和可回溯的日程。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-17-01.webp",
+          "alt": "EE Radar主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-18-project",
+      "teamId": 18,
+      "teamName": "康神开播了队",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "清华弈事",
+      "summary": "康神开播了队提交的游戏类作品《清华弈事》。已归档作品包与主界面截图，可在这里查看作品画面。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-18-01.webp",
+          "alt": "清华弈事 · 主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-19-project",
+      "teamId": 19,
+      "teamName": "逍遥剑宗",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "保卫绩点",
+      "summary": "期末周主题的浏览器塔防游戏：分配精力建造与升级防御塔，抵挡作业、实验报告和考试；结合经营布阵、音乐节拍与连击机制保护 GPA。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-19-01.webp",
+          "alt": "保卫绩点游戏界面"
+        }
+      ]
+    },
+    {
+      "id": "team-20-project",
+      "teamId": 20,
+      "teamName": "希儿世界第一可爱队",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "清华人生模拟器",
+      "summary": "以清华大学电子工程系的校园生活为起点，在学业、娱乐、健康、人际关系与职业选择间分配资源，通过分支叙事体验不同的人生路径。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-21-project",
+      "teamId": 21,
+      "teamName": "没想好名字的龙",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "共鸣之城",
+      "summary": "塑造建筑，聆听城市回应。六座程序化建筑组成可演奏的声学网络，高度决定音高，相邻建筑的音程影响回应关系，结合三维画面、声音与手势交互。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-21-01.webp",
+          "alt": "用户补充运行画面"
+        }
+      ]
+    },
+    {
+      "id": "team-22-project",
+      "teamId": 22,
+      "teamName": "XOR396",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "The last ark",
+      "summary": "双人同屏的二维太空合作游戏。两名玩家分别控制吸引与排斥力场，利用惯性和天体引力护送失去主引擎的方舟，穿越太阳系、虫洞与黑洞。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-22-01.webp",
+          "alt": "作品首页"
+        },
+        {
+          "src": "./assets/showcase/team-22-02.webp",
+          "alt": "航行目录"
+        },
+        {
+          "src": "./assets/showcase/team-22-03.webp",
+          "alt": "黑洞关卡"
+        },
+        {
+          "src": "./assets/showcase/team-22-04.webp",
+          "alt": "太阳系探索"
+        }
+      ]
+    },
+    {
+      "id": "team-23-project",
+      "teamId": 23,
+      "teamName": "灵感二重奏",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "摸鱼有策",
+      "summary": "像素校园策略游戏，将熟悉的课堂与休息场景设计为有选择和策略的互动体验，可通过桌面浏览器游玩。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-23-01.webp",
+          "alt": "摸鱼有策主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-25-project",
+      "teamId": 25,
+      "teamName": "歪脖扣腚队",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "奶龙乐园",
+      "summary": "互动桌面宠物小生态，可喂养、逗笑和观察奶龙，并通过配种推演体验外观遗传，让学习与工作间隙多一点轻量陪伴。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-25-01.webp",
+          "alt": "奶龙乐园桌面界面"
+        }
+      ]
+    },
+    {
+      "id": "team-26-project",
+      "teamId": 26,
+      "teamName": "双子星",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "豪情在天",
+      "summary": "把校园分支剧情与轻运动结合，通过挥手、拳击等体感动作参与故事，帮助主角应对质疑、建立自信。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-26-01.webp",
+          "alt": "豪情在天主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-27-project",
+      "teamId": 27,
+      "teamName": "肖哥出击",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "宵禁",
+      "summary": "面向 5–9 人的实时网页派对推理游戏，以淘金小镇为背景，结合隐藏身份、夜间技能、轮流发言与公开投票，并由服务端同步房间状态。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-28-project",
+      "teamId": 28,
+      "teamName": "ChaoGDP",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "奶蛋crush心理分析聊天助手",
+      "summary": "围绕聊天中的回复困惑，结合上下文提供可复制的回复建议与可追问的分析。文字推测用于辅助理解，不等同于对他人真实心理的判断。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-28-01.webp",
+          "alt": "奶蛋聊天助手主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-29-project",
+      "teamId": 29,
+      "teamName": "emmmmm",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "meetingVAR",
+      "summary": "课堂与会议中的重点回放助手，围绕用户关注的问题识别值得保留的时刻，关联字幕、音频、屏幕画面和时间位置，便于会后核对原始证据。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-30-project",
+      "teamId": 30,
+      "teamName": "北京大学队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "Research space",
+      "summary": "面向本科生科研入门的智能科研探索辅助平台，帮助学生开展科研方向探索。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-30-01.webp",
+          "alt": "Research space · 主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-33-project",
+      "teamId": 33,
+      "teamName": "idkbruh",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "雾谜",
+      "summary": "万圣节主题悬疑推理游戏，通过场景探索、角色视角切换、线索调查与证据整理推进案件，并依据最终指控进入不同结果。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-34-project",
+      "teamId": 34,
+      "teamName": "海淀深度旅游队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "学习辅助桌宠",
+      "summary": "在 OneTHU 上增加 Windows 学习桌宠，将作业任务与截止倒计时悬浮展示，并通过桌宠入口连接本机课程资料工具。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-35-project",
+      "teamId": 35,
+      "teamName": "AAA电球批发商",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "迷雾食物链",
+      "summary": "将食物链、身份声明与质疑规则组合成中文卡牌游戏，支持与 AI 或朋友进行推理、诈唬和合作；2v2 模式通过担保、盲传与分阶段传屏组织协作。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-35-01.webp",
+          "alt": "迷雾食物链 · 主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-36-project",
+      "teamId": 36,
+      "teamName": "rrd",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "紫荆大富翁",
+      "summary": "清华校园主题的同屏策略桌游，在熟悉的地点权衡学业、人际、幸福与资源消耗，把一个学期走成不同的经历。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-36-01.webp",
+          "alt": "紫荆大富翁 · 主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-37-project",
+      "teamId": 37,
+      "teamName": "藏贼宁队",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "你的清华日报",
+      "summary": "整理清华校内外公开资讯，生成个人信息日报与每日简报，帮助同学集中获取有用的信息。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-37-01.webp",
+          "alt": "你的清华日报演示"
+        }
+      ]
+    },
+    {
+      "id": "team-38-project",
+      "teamId": 38,
+      "teamName": "干饭蓝色大鲸鱼组",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "同频",
+      "summary": "面向小组协作的排期工具，整理成员可行时间与每周安排，寻找共同空闲时段。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-38-01.webp",
+          "alt": "同频共同时间"
+        }
+      ]
+    },
+    {
+      "id": "team-39-project",
+      "teamId": 39,
+      "teamName": "以线织星河",
+      "trackId": 1,
+      "trackName": "科研科创",
+      "title": "AutoCadence",
+      "summary": "电路仿真工作台，将电路设计与仿真服务器操作集中在桌面界面中，辅助电路实验与验证。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-39-01.webp",
+          "alt": "电路仿真工作台"
+        }
+      ]
+    },
+    {
+      "id": "team-40-project",
+      "teamId": 40,
+      "teamName": "无符号整型",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "未抵达的心意",
+      "summary": "使用 Ren’Py 制作的校园恋爱视觉小说，以剧本、美术和互动叙事呈现校园故事；提交材料包含游戏源码、运行素材与 Web 试玩产物。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-40-01.webp",
+          "alt": "作品封面"
+        }
+      ]
+    },
+    {
+      "id": "team-41-project",
+      "teamId": 41,
+      "teamName": "planer",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "planer",
+      "summary": "课程规划助手，收集和整理学习安排信息，辅助形成课程与学习计划。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-43-project",
+      "teamId": 43,
+      "teamName": "重拳出击鸭队",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "派蒙陪你玩",
+      "summary": "Windows 互动桌宠，提供陪伴、许愿和小剧场；在用户主动触发时读取当前游戏截图并给出基于画面的评论。",
+      "award": false,
+      "images": []
+    },
+    {
+      "id": "team-44-project",
+      "teamId": 44,
+      "teamName": "der哥球王粉丝团",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "PersonaVerse",
+      "summary": "将个人表达变成可以探索和分享的星球：以视觉标签呈现整体气质，以角色承载兴趣与音乐偏好，为社交提供轻松的话题入口。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-44-01.webp",
+          "alt": "PersonaVerse主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-45-project",
+      "teamId": 45,
+      "teamName": "什么都队",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "未被课表写下的一天",
+      "summary": "清华校园日常主题的三维互动游戏。跟随纸鸟“小折”与校园人物交谈、整理线索卡并选择故事收尾，把普通的相遇收进《园中拾页册》。",
+      "award": false,
+      "images": [
+        {
+          "src": "./assets/showcase/team-45-01.webp",
+          "alt": "校园三维互动游戏画面"
+        }
+      ]
+    },
+    {
+      "id": "team-46-project",
+      "teamId": 46,
+      "teamName": "收敛队",
+      "trackId": 4,
+      "trackName": "游戏类",
+      "title": "胡闹桌游社",
+      "summary": "将象棋、围棋、军棋、狼人杀和纸牌题材组合成单人卡牌 Roguelike，在同一棋盘体验部署、走位、攻击、防守与卡组构筑，完成五层冒险。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-46-01.webp",
+          "alt": "胡闹桌游社 · 主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-47-project",
+      "teamId": 47,
+      "teamName": "给你的队伍起一个帅气的队",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "荷塘月色",
+      "summary": "把可互动的像素小岛放在真实桌面上，用风雨、植物、动物和专注计时提供陪伴；支持花园照料、声音送风和局域网手机共玩。",
+      "award": true,
+      "images": []
+    },
+    {
+      "id": "team-48-project",
+      "teamId": 48,
+      "teamName": "我要放寒假",
+      "trackId": 5,
+      "trackName": "创意整活与数字文娱",
+      "title": "EmotionOS",
+      "summary": "把烦恼变成 .exe 进程、压力变成精神 CPU、陪伴变成桌宠，以可点击和可重启的精神桌面承载情绪表达，并为真实待办的完成提供反馈。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-48-01.webp",
+          "alt": "EmotionOS主界面"
+        }
+      ]
+    },
+    {
+      "id": "team-49-project",
+      "teamId": 49,
+      "teamName": "粤语歌",
+      "trackId": 2,
+      "trackName": "校园学习生活",
+      "title": "方寸",
+      "summary": "在不换宿舍、不移动固定家具的前提下，帮助学生判断物品能否放下，通过腾桌和换季收纳改善学习与生活空间。",
+      "award": true,
+      "images": [
+        {
+          "src": "./assets/showcase/team-49-01.webp",
+          "alt": "方寸现场运行画面"
+        }
+      ]
+    }
+  ]
+}

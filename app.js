@@ -9,6 +9,12 @@ const sprites=[];
 const nf=new Intl.NumberFormat('en-US');
 let appearanceStorage=null;try{appearanceStorage=window.localStorage;}catch{}
 const appearances=window.EEAppearances.createAppearanceStore({storage:appearanceStorage});
+const showcase=window.EEShowcase.create($('#project-panel'));
+let detailReturnFocus=null;
+function setModal(open){
+ $('#detail').hidden=!open;$('#detail-backdrop').hidden=!open;
+ for(const child of $('#screen').children)if(child.id!=='detail'&&child.id!=='detail-backdrop')child.inert=open;
+}
 // Real track membership and counts come from the questionnaire's sanitized snapshot.
 const tracks=[];
 const teams=[];
@@ -146,12 +152,13 @@ function detail(index,show=true){
  $('#detail-state').textContent=statusOf(t)==='unknown'?'● 实时请求状态未知':statusOf(t)==='active'?'● API 请求进行中':'● 休息';
  $('#detail-tokens').textContent=fmt(t.tokens);
  updateAppearancePicker(t);
+ showcase.show(t);
  const notes={held:'开场且后台开放 API 发放后同步，当前按要求显示 0。',unassigned:'本组尚未分配 API，当前显示 0。',pending:'等待首次有效用量，请稍后。',stale:'查询暂未更新，保留上次有效累计值。',invalid:'已分配密钥暂时无法查询。',unsupported:'该 API 来源暂未接入用量统计。',limited:'上游查询限流，等待重试。',error:'上游查询失败，等待重试。',ok:'密钥自上游记录以来的累计 Token；实时并发暂未接入。'};
  $('.detail-note').textContent=(notes[t.usageState]||'等待同步')+(t.updatedAt?' 更新：'+new Date(t.updatedAt).toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false}):'');
- if(show){$('#detail').hidden=false;$('#team-select').value=String(index);$('#close-detail').focus();}
+ if(show){if($('#detail').hidden)detailReturnFocus=document.activeElement;setModal(true);$('#team-select').value=String(index);$('#close-detail').focus();}
  draw();
 }
-function close(){state.selected=null;$('#detail').hidden=true;$('#team-select').value='';draw();}
+function close(render=true){const wasOpen=!$('#detail').hidden;state.selected=null;setModal(false);$('#team-select').value='';if(wasOpen&&detailReturnFocus?.isConnected)detailReturnFocus.focus();if(render)draw();}
 function updateAppearancePicker(team){
  for(const button of document.querySelectorAll('.appearance-choice'))button.setAttribute('aria-pressed',String(Number(button.dataset.sprite)===team.sprite));
  $('#appearance-current').textContent='形象 '+String(team.sprite+1).padStart(2,'0');
@@ -176,7 +183,14 @@ $('#appearance-random').addEventListener('click',()=>changeAppearance('random'))
 function point(event){const r=canvas.getBoundingClientRect();return {x:(event.clientX-r.left)*W/r.width,y:(event.clientY-r.top)*H/r.height};}
 function hit(event){const p=point(event);return positions.findIndex(v=>Math.abs(p.x-v.x)<55*v.scale&&p.y>v.y-94*v.scale&&p.y<v.y+57*v.scale);}
 canvas.addEventListener('click',e=>{const i=hit(e);if(i>=0)detail(i);else close();});canvas.addEventListener('mousemove',e=>{const i=hit(e);state.hover=i>=0?i:null;canvas.style.cursor=i>=0?'pointer':'default';canvas.title=i>=0?teams[i].name:'';if(state.frame===0||reduced)draw();});canvas.addEventListener('mouseleave',()=>{state.hover=null;canvas.title='';draw();});
-$('#close-detail').addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+$('#close-detail').addEventListener('click',close);$('#detail-backdrop').addEventListener('click',close);
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape')close();
+ if(e.key==='Tab'&&!$('#detail').hidden){
+  const nodes=[...$('#detail').querySelectorAll('button,a[href],select,[tabindex="0"]')].filter(n=>!n.disabled&&!n.hidden&&n.getClientRects().length),first=nodes[0],last=nodes[nodes.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+ }
+});
 function rebuildSelect(){const select=$('#team-select');select.replaceChildren(new Option('查看小组…',''));teams.forEach((t,i)=>select.append(new Option(t.name,i)));select.value=state.selected===null?'':String(state.selected);}
 $('#team-select').addEventListener('change',e=>{if(e.target.value!=='')detail(Number(e.target.value));else close();});
 $('#fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{$('#sync').textContent='请使用浏览器 F11 进入全屏';}});
@@ -206,7 +220,7 @@ function applySnapshot(data){
  // Re-evaluate on every snapshot so the first signup reveals its track automatically.
  tracks.splice(0,tracks.length,...data.tracks.map(t=>({...t,sourceId:t.id,id:String(t.id),teamCount:data.teams.filter(team=>team.trackId===t.id).length})).filter(t=>t.teamCount>0));
  teams.splice(0,teams.length,...data.teams.map(t=>({id:t.id,name:t.displayName,trackId:String(t.trackId),peopleCount:t.peopleCount,tokens:t.totalTokens,activeRequests:t.activeRequests===0?0:null,usageState:t.usageState,updatedAt:t.updatedAt,sprite:appearances.get(t.id),phase:0})));
- state.snapshot=data;state.live=true;state.stale=false;state.selected=previousId===undefined?null:teams.findIndex(t=>t.id===previousId);if(state.selected===-1){state.selected=null;$('#detail').hidden=true;}state.hover=null;
+ state.snapshot=data;state.live=true;state.stale=false;state.selected=previousId===undefined?null:teams.findIndex(t=>t.id===previousId);if(state.selected===-1)close(false);state.hover=null;
  $('.demo-label').textContent='LIVE / 真实登记';positions=makePositions();rebuildSelect();updateNumbers();if(state.ready){buildBackdrop();draw();}
  const pending=data.totals.teamCount-data.totals.knownUsageTeams;
  $('#sync').textContent='问卷同步 '+new Date(data.generatedAt).toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})+(data.usageEnabled?' · Token 约 30 秒/轮'+(pending?' · '+pending+' 组待同步':'')+(data.totals.staleTeams?' · '+data.totals.staleTeams+' 组待更新':''):' · Token 待开场与发放');
