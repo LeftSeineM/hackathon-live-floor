@@ -51,7 +51,7 @@ function createShowcase(panel){
  }
  async function load(){
   if(pending)return pending;
-  pending=(async()=>{try{const r=await fetch('./data/showcase.json?v=showcase-images-1019',{cache:'no-cache',credentials:'omit',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('HTTP');catalog=validate(await r.json());failed=false;}catch{failed=true;}finally{pending=null;if(teamId!==null)render();}})();
+  pending=(async()=>{try{const r=await fetch('./data/showcase.json?v=showcase-hetang-1020',{cache:'no-cache',credentials:'omit',signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('HTTP');catalog=validate(await r.json());failed=false;}catch{failed=true;}finally{pending=null;if(teamId!==null)render();}})();
   return pending;
  }
  return {show(team){if(teamId===team.id)return;teamId=team.id;projectIndex=0;panel.scrollTop=0;delete panel.dataset.projectId;if(!catalog&&!failed)load();render();}};

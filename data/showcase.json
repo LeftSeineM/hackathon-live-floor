@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-19",
+  "updatedAt": "2026-10-20",
   "projects": [
     {
       "id": "team-4-project",
@@ -690,7 +690,12 @@
       "title": "荷塘月色",
       "summary": "把可互动的像素小岛放在真实桌面上，用风雨、植物、动物和专注计时提供陪伴；支持花园照料、声音送风和局域网手机共玩。",
       "award": true,
-      "images": []
+      "images": [
+        {
+          "src": "./assets/showcase/team-47-01.webp",
+          "alt": "荷塘月色 · 像素花园桌面运行画面"
+        }
+      ]
     },
     {
       "id": "team-48-project",

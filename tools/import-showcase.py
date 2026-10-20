@@ -111,7 +111,8 @@ def main():
             audit.append({'teamId':tid,'source':str(path),'sourceSha256':digest,'published':dest.relative_to(root).as_posix()})
             used.append((tid,dest))
         projects.append({'id':f'team-{tid}-project','teamId':tid,'teamName':e['team'],'trackId':current['trackId'],'trackName':e['track'],'title':confirmed.get('title',e['title']) if confirmed else e['title'],'summary':confirmed.get('summary',SUMMARIES[tid]) if confirmed else SUMMARIES[tid],'award':bool(e['award']),'images':images})
-    data={'version':1,'updatedAt':'2026-10-19','projects':projects}
+    updated_at=max(['2026-10-19']+[c.get('confirmedAt','2026-10-19') for c in confirmations.values()])
+    data={'version':1,'updatedAt':updated_at,'projects':projects}
     expected={p.resolve() for _,p in used}
     for old in images_root.glob('team-*.webp'):
         if old.resolve() not in expected: old.unlink()

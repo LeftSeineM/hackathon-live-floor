@@ -36,7 +36,9 @@ const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.jso
   assert.equal(catalog.projects.find(p=>p.teamId===29).images.length,1,'user confirmed Zhixing as team 29');
   assert.equal(catalog.projects.find(p=>p.teamId===41).title,'留白 · 日程助手');
   assert.equal(catalog.projects.find(p=>p.teamId===27).images.length,4);
-  assert.equal(catalog.projects.filter(p=>p.images.length).length,40);
+  assert.equal(catalog.projects.find(p=>p.teamId===47).images.length,1);
+  assert.deepEqual(catalog.projects.filter(p=>!p.images.length).map(p=>p.teamId),[43]);
+  assert.equal(catalog.projects.filter(p=>p.images.length).length,41);
   await open(27);
   for(let i=0;i<4;i++){await page.locator('.project-thumbnail').nth(i).click();await page.waitForFunction(()=>{const im=document.querySelector('.project-image-stage img');return im?.complete&&im.naturalWidth>0&&!im.hidden;});assert.match(await page.locator('.project-image-footer').textContent(),new RegExp((i+1)+' / 4'));}
   await page.screenshot({path:path.join(root,'qa/showcase-team-27.png')});
